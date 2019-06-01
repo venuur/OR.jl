@@ -1,12 +1,15 @@
 module OperationsAnalysis
 using OR.Forecast
+using Printf
 
 export example_2_1
 
 """
     example_2_1()
 
-
+Example 2.1: Illustration of mean absolute deviation (MAD), mean squared error, and mean
+absolute percentage error (MAPE). Usage is for measuring forecast error. Example compares
+two forecasts `p1` and `p2` for their respective series `o1` and `o2`.
 
 """
 function example_2_1()
@@ -35,6 +38,48 @@ function example_2_1()
     mape2 = mape(e2, o2)
     best_mape = mape1 < mape2 ? 1 : 2
     println("Plant $best_mape has the best MAPE (1: $mape1 vs. 2: $mape2)")
+    println()
+end
+
+"""
+    example_2_2()
+
+Example 2.2: Illustration of moving average over 3 and 6 periods, denoted MA(3) and MA(6).
+The example presents the forecast and errors as a table.
+
+"""
+function example_2_2()
+    println("Operations Analysis Example 2.2")
+    println("-------------------------------")
+
+    y = [200, 250, 175, 186, 225, 285, 305, 190]
+
+    ma3 = Array{Float64}(undef, length(y) - 3)
+    for i in eachindex(y)[4:end]
+        ma3[i-3] = sum(y[i-3:i-1]) / 3
+    end
+    ma3e = ma3 .- y[4:end]
+
+    ma6 = Array{Float64}(undef, length(y) - 6)
+    for i in eachindex(y)[7:end]
+        ma6[i-6] = sum(y[i-6:i-1]) / 6
+    end
+    ma6e = ma6 .- y[7:end]
+
+    @printf "        Engine\n"
+    @printf "Quarter Failure   MA(3)   Error   MA(6)   Error\n"
+    format_str = "%7d %7d %7.1f %7.1f %7.1f %7.1f"
+    for i = 1:3
+        @printf "%-7d %7d\n" i y[i]
+    end
+    for i = 4:6
+        @printf "%-7d %7d %7.1f %7.1f\n" i y[i] ma3[i-3] ma3e[i-3]
+    end
+    for i = 7:8
+        @printf("%-7d %7d %7.1f %7.1f %7.1f %7.1f\n",
+                i, y[i], ma3[i-3], ma3e[i-3], ma6[i-6], ma6e[i-6])
+    end
+    println()
 end
 
 end  # module OperationsAnalysis
