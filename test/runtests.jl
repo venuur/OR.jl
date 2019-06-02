@@ -39,5 +39,16 @@ function test_moving_average()
     end
 end
 
+function test_exponential_smoothing()
+    test_y = [200, 250, 175, 186, 225, 285, 305, 190]
+    ex_es = [200.0, 205.0, 202.0, 200.4, 202.9, 211.1, 220.5]
+    α = 0.1
+    es_yhat = es(test_y, test_y[0], α)
+    ex_atol = 0.05
+    for (yhat, ex_yhat) in zip(es_yhat, ex_es)
+        @test yhat ≈ ex_yhat atol=ex_atol
+    end
+end
+
 test_forecast_error()
 test_moving_average()

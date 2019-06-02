@@ -82,12 +82,8 @@ function example_2_3()
     y = [200, 250, 175, 186, 225, 285, 305, 190]
     esf0 = 200
     α = 0.1
-    α1 = 1.0 - α
-    esf = Array{Float64}(undef, length(y) - 1)
-    esf[1] = α*y[1] + α1*esf0
-    for i in eachindex(y)[3:end]
-        esf[i-1] = α*y[i-1] + α1*esf[i-2]
-    end
+
+    esf = es(y, esf0, α)
 
     println("Quarter Failures Forecast")
     @printf "%7d %8d %8.1f*\n" 1 y[1] esf0
@@ -119,7 +115,6 @@ function example_2_3()
     println("Model       MAD     MSE")
     @printf "MA(3)   %7.1f %7.1f\n" ma3_mad ma3_mse
     @printf "ES(0.1) %7.1f %7.1f\n" esf_mad esf_mse
-
 end
 
 end  # module OperationsAnalysis
