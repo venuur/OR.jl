@@ -124,11 +124,12 @@ function example_2_4()
     y = [200, 250, 175, 186, 225, 285, 305, 190]
     n = 5
 
+    a, b = lr(y[1:n])
+
+    # Included to make the exercise complete, but not need for calculating a and b, Because
+    # that is handled by the lr function.
     sxx = n^2*(n + 1)*(2*n + 1) / 6 - n^2*(n + 1)^2 / 4
     sxy = n*sum((1:n).*y[1:n]) - n*(n+1) / 2 * sum(y[1:n])
-    dbar = sum(y[1:n]) / n
-    b = sxy / sxx
-    a = dbar - b*(n+1) / 2
 
     println("Checking our work...")
     println("S_xy = $sxy")

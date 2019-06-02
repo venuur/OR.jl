@@ -10,7 +10,7 @@ module OR
 """
 Moving average and exponential smoothing forecasts assume a stationary demand process.
 Hence, their one step ahead and multi-step ahead forecasts are identical. The basic model is
-the following
+the following:
 
     D(t) = μ + ε(t),    ∀ t.
 
@@ -19,9 +19,18 @@ seasonality.  Although, the assumption may be locally accurate, say within the w
 of the weekly demand withing several months. Finally, using large α or small N can make the
 forecasts more responsive to small trends.
 
+Linear regression on the demand time series assumes the following functional form represents
+the underlying demand process:
+
+    D(t) = a + b t + ε(t),    ∀ t.
+
+Because the regression is in a single, simple independent variable, calculating the
+coefficients is linear in the size of the data. The solution is analytical involving only
+simple arithmetic.
+
 """
 module Forecast
-export mad, mse, mape, ma, ma!, es, es!
+export mad, mse, mape, ma, ma!, es, es!, lr
 mad(e) = sum(abs.(e)) / length(e)
 mse(e) = sum(e.^2) / length(e)
 mape(e, y) = sum(abs.(e ./ y)) / length(e) * 100
@@ -57,6 +66,25 @@ function es(y, yhat0, α)
 end
 # p. 71 [1]
 es_avg_age(α) = inv(α)
+
+function lr(y::Vector{T}) where T
+    n = length(y)
+    c = n*(n+1) / 2
+    sxx = c*n*(2*n + 1) / 3 - c^2
+
+    # Formula
+    #     S_xy = n sum((1:y).*y) - c sum(y)
+    sxy::T = 0
+    for i in eachindex(y)
+        sxy += (n*i - c) * y[i]
+    end
+
+    dbar = sum(y) / n
+    b = sxy / sxx
+    a = dbar - b*(n+1) / 2
+
+    a, b
+end
 
 end  # module Forecast
 
