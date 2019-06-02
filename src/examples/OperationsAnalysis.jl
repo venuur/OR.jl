@@ -54,21 +54,14 @@ function example_2_2()
 
     y = [200, 250, 175, 186, 225, 285, 305, 190]
 
-    ma3 = Array{Float64}(undef, length(y) - 3)
-    for i in eachindex(y)[4:end]
-        ma3[i-3] = sum(y[i-3:i-1]) / 3
-    end
+    ma3 = ma(y, 3)
     ma3e = ma3 .- y[4:end]
 
-    ma6 = Array{Float64}(undef, length(y) - 6)
-    for i in eachindex(y)[7:end]
-        ma6[i-6] = sum(y[i-6:i-1]) / 6
-    end
+    ma6 = ma(y, 6)
     ma6e = ma6 .- y[7:end]
 
     @printf "        Engine\n"
     @printf "Quarter Failure   MA(3)   Error   MA(6)   Error\n"
-    format_str = "%7d %7d %7.1f %7.1f %7.1f %7.1f"
     for i = 1:3
         @printf "%-7d %7d\n" i y[i]
     end
