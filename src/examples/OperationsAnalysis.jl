@@ -76,7 +76,7 @@ function example_2_2()
 end
 
 function example_2_3()
-    println("Operations Analysis Example 2.2")
+    println("Operations Analysis Example 2.3")
     println("-------------------------------")
 
     y = [200, 250, 175, 186, 225, 285, 305, 190]
@@ -115,6 +115,30 @@ function example_2_3()
     println("Model       MAD     MSE")
     @printf "MA(3)   %7.1f %7.1f\n" ma3_mad ma3_mse
     @printf "ES(0.1) %7.1f %7.1f\n" esf_mad esf_mse
+end
+
+function example_2_4()
+    println("Operations Analysis Example 2.4")
+    println("-------------------------------")
+
+    y = [200, 250, 175, 186, 225, 285, 305, 190]
+    n = 5
+
+    sxx = n^2*(n + 1)*(2*n + 1) / 6 - n^2*(n + 1)^2 / 4
+    sxy = n*sum((1:n).*y[1:n]) - n*(n+1) / 2 * sum(y[1:n])
+    dbar = sum(y[1:n]) / n
+    b = sxy / sxx
+    a = dbar - b*(n+1) / 2
+
+    println("Checking our work...")
+    println("S_xy = $sxy")
+    println("S_xx = $sxx")
+    println("b    = $b")
+    println("a    = $a")
+    println()
+
+    @printf "yhat(t) = %.1f + (%.1f)t" a b
+    println()
 end
 
 end  # module OperationsAnalysis
