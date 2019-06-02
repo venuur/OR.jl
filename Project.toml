@@ -1,7 +1,8 @@
-name = "OR"
+name = "OR,jl"
 uuid = "79d3d950-8414-11e9-12da-8539a7e43b55"
-authors = ["Carl Morris <carl.morris.world@gmail.com>"]
+authors = ["Carl Morris <carl.morris.world@outlook.com>"]
 version = "0.1.0"
 
 [deps]
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
