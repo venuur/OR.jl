@@ -2,7 +2,7 @@ module OperationsAnalysis
 using OR.Forecast
 using Printf
 
-export example_2_1
+export example_2_1, example_2_2, example_2_3
 
 """
     example_2_1()
@@ -72,6 +72,30 @@ function example_2_2()
         @printf("%-7d %7d %7.1f %7.1f %7.1f %7.1f\n",
                 i, y[i], ma3[i-3], ma3e[i-3], ma6[i-6], ma6e[i-6])
     end
+    println()
+end
+
+function example_2_3()
+    println("Operations Analysis Example 2.2")
+    println("-------------------------------")
+
+    y = [200, 250, 175, 186, 225, 285, 305, 190]
+    esf0 = 200
+    α = 0.1
+    α1 = 1.0 - α
+    esf = Array{Float64}(undef, length(y) - 1)
+    esf[1] = α*y[1] + α1*esf0
+    for i in eachindex(y)[3:end]
+        esf[i-1] = α*y[i-1] + α1*esf[i-2]
+    end
+
+    println("Quarter Failures Forecast")
+    @printf "%7d %8d %8.1f*\n" 1 y[1] esf0
+    for i in eachindex(y)[2:end]
+        @printf "%7d %8d %8.1f\n" i y[i] esf[i-1]
+    end
+    println()
+    println("* Assumed initial forecast")
     println()
 end
 
