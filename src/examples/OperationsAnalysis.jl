@@ -97,6 +97,29 @@ function example_2_3()
     println()
     println("* Assumed initial forecast")
     println()
+
+    println("Comparison with MA(3)")
+    ma3 = ma(y, 3)
+    ma3e = ma3 .- y[4:end]
+    esfe = esf .- y[2:end]
+
+    println("Quarter Failures   MA(3) |Error| ES(0.1) |Error|")
+    for i in eachindex(y)[4:end]
+        @printf("%7d %8d %7.1f %7.1f %7.1f %7.1f\n",
+                i, y[i], ma3[i-3], abs(ma3e[i-3]), esf[i-1], abs(esfe[i-1]))
+    end
+    println()
+
+    println("Forecast error")
+    ma3_mad = mad(ma3e)
+    esf_mad = mad(esfe[3:end])
+    ma3_mse = mse(ma3e)
+    esf_mse = mse(esfe[3:end])
+
+    println("Model       MAD     MSE")
+    @printf "MA(3)   %7.1f %7.1f\n" ma3_mad ma3_mse
+    @printf "ES(0.1) %7.1f %7.1f\n" esf_mad esf_mse
+
 end
 
 end  # module OperationsAnalysis
