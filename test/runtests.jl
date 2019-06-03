@@ -62,7 +62,25 @@ function test_linear_regression()
     @test b ≈ ex_b atol=ex_atol
 end
 
+function test_double_exponential_smoothing()
+    test_y = [200, 250, 175, 186, 225, 285, 305, 190]
+    ex_s = [209.0, 222.0, 226.5, 231.1, 238.7, 251.4, 265.2]
+    ex_g = [9.9, 10.21, 9.64, 9.14, 8.98, 9.36, 9.8]
+    g0 = 10.0
+    α = 0.1
+    β = 0.1
+
+    s, g = es2(test_y, test_y[1], g0, α, β)
+
+    ex_atol = 0.05
+    for (si, gi, ex_si, ex_gi) in zip(s, g, ex_s, ex_g)
+        @test si ≈ ex_si atol=ex_atol
+        @test gi ≈ ex_gi atol=ex_atol
+    end
+end
+
 test_forecast_error()
 test_moving_average()
 test_exponential_smoothing()
 test_linear_regression()
+test_double_exponential_smoothing()

@@ -30,7 +30,7 @@ simple arithmetic.
 
 """
 module Forecast
-export mad, mse, mape, ma, ma!, es, es!, lr
+export mad, mse, mape, ma, ma!, es, es!, lr, es2, es2!
 mad(e) = sum(abs.(e)) / length(e)
 mse(e) = sum(e.^2) / length(e)
 mape(e, y) = sum(abs.(e ./ y)) / length(e) * 100
@@ -41,6 +41,14 @@ function ma!(yhat, y, n)
     end
     yhat
 end
+"""
+    ma(y, n)
+    ma!(yhat, y, n)
+
+Generate an `n` period moving average for time series `y`. The in place version `ma!`
+expects a vector of length `length(y) - n`.
+
+"""
 function ma(y, n)
     yhat = Array{Float64}(undef, length(y) - n)
     ma!(yhat, y, n)
@@ -49,6 +57,15 @@ end
 ma_avg_age(n) = (n+1) / 2
 
 es_op(y, yhat, α, α1) = α*y + α1*yhat
+"""
+    es_op(y, yhat, α)
+    es_op(y, yhat, α, α1)
+
+Update exponential smoothing forecast given most recent obervation `y` and forecast `yhat`
+with smoohting coefficient `α`. The four argument version expects `α1 = one(α) - α`, which
+is used to avoid recalculating that term in repeated calls.
+
+"""
 es_op(y, yhat, α) = es_op(y, yhat, α, one(α) - α)
 function es!(yhat, y, yhat0, α)
     α1 = one(α) - α
@@ -60,6 +77,15 @@ function es!(yhat, y, yhat0, α)
     end
     yhat
 end
+"""
+    es(y, yhat0, α)
+    es!(yhat, y, yhat0, α)
+
+Generate an exponential smoothing with initial forecast `yhat0` and smoothing coefficient
+`α` for a time series `y`. The in place version `es!` expects a vector of length
+`length(y) - 1`.
+
+"""
 function es(y, yhat0, α)
     yhat = Array{Float64}(undef, length(y) - 1)
     es!(yhat, y, yhat0, α)
@@ -67,6 +93,12 @@ end
 # p. 71 [1]
 es_avg_age(α) = inv(α)
 
+"""
+    lr(y)
+
+Returns intercept and slope of a linear trend line fitted to the time series `y`.
+
+"""
 function lr(y::Vector{T}) where T
     n = length(y)
     c = n*(n+1) / 2
@@ -84,6 +116,36 @@ function lr(y::Vector{T}) where T
     a = dbar - b*(n+1) / 2
 
     a, b
+end
+
+function es2!(s, g, y, s0, g0, α, β)
+    α1 = one(α) - α
+    β1 = one(β) - β
+    s[1] = es_op(y[1], s0+g0, α, α1)
+    g[1] = es_op(s[1]-s0, g0, β, β1)
+    for i in eachindex(s)[2:end]
+        im1 = i - 1
+        s[i] = es_op(y[i], s[im1]+g[im1], α, α1)
+        g[i] = es_op(s[i]-s[im1], g[im1], β, β1)
+    end
+    s, g
+end
+
+"""
+    es2(y, s0, g0, α, β)
+    es2!(s, g, y, s0, g0, α, β)
+
+Double exponential smoothing via Holt's method (p. 77 [1]). Performs exponential smoothing
+for the intercept `s` and then estimates the slope via exponential smoothing using the
+differences `s[t]-s[t-1]`. Initial intercept and slope forecasts are `s0` and `g0`.
+Smoothing coefficients for intercept and slope `α` and `β`. The in place version `es2!`
+expects vectors `s` and `g` to have length `length(y) - 1`.
+
+"""
+function es2(y, s0, g0, α, β)
+    s = Array{Float64}(undef, length(y) - 1)
+    g = Array{Float64}(undef, length(y) - 1)
+    es2!(s, g, y, s0, g0, α, β)
 end
 
 end  # module Forecast

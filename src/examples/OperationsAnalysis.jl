@@ -149,21 +149,11 @@ function example_2_5()
 
     y = [200, 250, 175, 186, 225, 285, 305, 190]
     s0 = 200
-    g0 = 10
+    g0 = 10.0
     α = 0.1
-    α1 = 1.0 - α
     β = 0.1
-    β1 = 1.0 - β
 
-    s = Array{Float64}(undef, length(y) - 1)
-    g = Array{Float64}(undef, length(y) - 1)
-    s[1] = α*y[1] + α1*(s0 + g0)
-    g[1] = β*(s[1] - s0) + β1*g0
-    for i in eachindex(s)[2:end]
-        im1 = i - 1
-        s[i] = α*y[i] + α1*(s[im1] + g[im1])
-        g[i] = β*(s[i] - s[im1]) + β1*g[im1]
-    end
+    s, g = es2(y, s0, g0, α, β)
 
     println("Checking our work...")
     for i = 1:3
@@ -189,7 +179,6 @@ function example_2_5()
     println("Forecast for period 5 in period 2:")
     @printf "F_2_5 = %.1f + 3(%.1f) = %.1f\n" s[2] g[2] (s[2]+3*g[2])
     println()
-
 end
 
 end  # module OperationsAnalysis
