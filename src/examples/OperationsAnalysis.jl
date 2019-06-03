@@ -115,6 +115,7 @@ function example_2_3()
     println("Model       MAD     MSE")
     @printf "MA(3)   %7.1f %7.1f\n" ma3_mad ma3_mse
     @printf "ES(0.1) %7.1f %7.1f\n" esf_mad esf_mse
+    println()
 end
 
 function example_2_4()
@@ -140,6 +141,55 @@ function example_2_4()
 
     @printf "yhat(t) = %.1f + (%.1f)t" a b
     println()
+end
+
+function example_2_5()
+    println("Operations Analysis Example 2.5")
+    println("-------------------------------")
+
+    y = [200, 250, 175, 186, 225, 285, 305, 190]
+    s0 = 200
+    g0 = 10
+    α = 0.1
+    α1 = 1.0 - α
+    β = 0.1
+    β1 = 1.0 - β
+
+    s = Array{Float64}(undef, length(y) - 1)
+    g = Array{Float64}(undef, length(y) - 1)
+    s[1] = α*y[1] + α1*(s0 + g0)
+    g[1] = β*(s[1] - s0) + β1*g0
+    for i in eachindex(s)[2:end]
+        im1 = i - 1
+        s[i] = α*y[i] + α1*(s[im1] + g[im1])
+        g[i] = β*(s[i] - s[im1]) + β1*g[im1]
+    end
+
+    println("Checking our work...")
+    for i = 1:3
+        @printf "s%d = %.1f\n" i s[i]
+        @printf "g%d = %.1f\n" i g[i]
+    end
+    println()
+
+    e = Array{Float64}(undef, length(s))
+    println("Period Actual Forecast |Error|")
+    for i in eachindex(y)[4:end]
+        yhat = s[i-1] + g[i-1]
+        yi = y[i]
+        e[i-1] = yhat - yi
+        (i >= 4) && @printf "%6d %6d %8.1f %7.1f\n" i yi yhat abs(yhat-yi)
+    end
+    println()
+
+    println("Summary Forecast Error")
+    @printf "MAD = %.1f\n" mad(e[3:end])
+    println()
+
+    println("Forecast for period 5 in period 2:")
+    @printf "F_2_5 = %.1f + 3(%.1f) = %.1f\n" s[2] g[2] (s[2]+3*g[2])
+    println()
+
 end
 
 end  # module OperationsAnalysis
