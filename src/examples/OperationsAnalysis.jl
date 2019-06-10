@@ -181,4 +181,58 @@ function example_2_5()
     println()
 end
 
+function example_2_6()
+    println("Operations Analysis Example 2.6")
+    println("-------------------------------")
+
+    y = [
+        16.2 17.3 14.6 16.1;
+        12.2 11.5 13.1 11.8;
+        14.2 15.0 13.0 12.9;
+        17.3 17.6 16.9 16.6;
+        22.5 23.5 21.9 24.3
+    ]
+
+    ybar = sum(y) / length(y)
+
+    @printf "1. Mean over full dataset: %.3f\n" ybar
+    println()
+
+    y ./= ybar
+
+    println("2. Scaled observations:")
+    rows, cols = axes(y)
+    for i = rows
+        for j = cols
+            @printf "%7.3f" y[i,j]
+        end
+        println()
+    end
+    println()
+
+    w = sum(y; dims=2) / size(y, 2)
+
+    println("3. Seasonal factors")
+    weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+    for (weekday, wi) = zip(weekdays, w)
+        @printf "\t%-11s %.2f\n" (weekday*":") wi
+    end
+    println()
+
+    println(
+    "Checking our work. We expect the sum of the seasonal factors ",
+    "to equal the number of periods:")
+    println("\t#periods = ", size(y, 1))
+    @printf "\t∑w = %.1f\n" sum(w)
+    println()
+
+    yhat = w .* ybar
+
+    println("Forecast for each weekday:")
+    for (weekday, yhati) = zip(weekdays, yhat)
+        @printf "\t%-11s %.2f\n" (weekday*":") yhati
+    end
+    println()
+end
+
 end  # module OperationsAnalysis
